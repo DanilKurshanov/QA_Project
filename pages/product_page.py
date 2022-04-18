@@ -20,8 +20,20 @@ class ProductPage(BasePage):
         bnt_add_to_basket = self.browser.find_element(*ProductPageLocators.BUTTON_ADD_TO_BASKET)
         bnt_add_to_basket.click()
 
-    # def should_be_message_about_product_in_basket(self):
-    #     assert self.is_element_present(*MainPageLocators.LOGIN_LINK), "Login link is not presented"
+
+    def should_be_correc_product_name_in_alert_messege(self):
+        alert_name = self.browser.find_element(*ProductPageLocators.ALERT_ADDED_TO_CART_NAME).text
+        name = self.browser.find_element(*ProductPageLocators.NAME_OF_PRODUCT).text
+        assert alert_name == name, "The name in the basket does not match"
 
     def should_be_correc_prise_product_in_backets(self):
-        assert self.is_prise_correct(*ProductPageLocators.PRICE_PRODUCTS_IN_BASKET, *ProductPageLocators.PRICE_OF_PRODUCT), ""
+        price_in_basket = self.browser.find_element(*ProductPageLocators.PRICE_PRODUCTS_IN_BASKET).text
+        price_of_product = self.browser.find_element(*ProductPageLocators.PRICE_OF_PRODUCT).text
+        assert price_of_product == price_in_basket, 'Price in the basket does not match'
+
+    def should_not_be_success_message(self):
+        assert self.is_not_element_present(*ProductPageLocators.ALERT_ADDED_TO_CART_NAME), \
+            "Success message is presented, but should not be"
+
+    def should_be_disappeared_message(self):
+        assert self.is_disappeared(*ProductPageLocators.ALERT_ADDED_TO_CART_NAME)
