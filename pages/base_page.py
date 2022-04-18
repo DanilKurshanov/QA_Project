@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from .locators import *
 import math
 import time
 
@@ -55,6 +56,16 @@ class BasePage():
             return False
         return True
 
+    def basket_opened_from_any_page(self):
+        link_to_basket = self.browser.find_element(*BasePageLocators.LINK_BASKET)
+        link_to_basket.click()
+
+    def should_be_to_basket_link(self):
+        assert self.is_element_present(
+            *BasePageLocators.LINK_BASKET), "Link to basket from Main Page not presented"
+
+    def is_empty_basket(self):
+        assert len(self.browser.find_elements(*BasketPageLocators.MESSAGE_ABOUT_EMPTY)) == 1, 'Basket is not empty'
 
     def solve_quiz_and_get_code(self):
         alert = self.browser.switch_to.alert
