@@ -16,21 +16,22 @@ class BasePage():
         self.url = url
         self.browser.implicitly_wait(timeout)
 
+    def basket_opened_from_any_page(self):
+        link_to_basket = self.browser.find_element(*BasePageLocators.LINK_BASKET)
+        link_to_basket.click()
+
+    def go_to_login_page(self):
+        link = self.browser.find_element(*BasePageLocators.LOGIN_LINK)
+        link.click()
+
     def open(self):
         self.browser.get(self.url)
 
-    def go_to_login_page(self):
-        link = self.browser.find_element(*BasePageLocators.LOGIN_LINK_INVALID)
-        link.click()
-
-    def should_be_login_link(self):
-        assert self.is_element_present(*BasePageLocators.LOGIN_LINK), "Login link is not presented"
-
-    def is_url_login_correct(self):
+    def is_disappeared(self, how, what, timeout=4):
         try:
-            self.browser.switch_to_window(self.browser.window_handles[0])
-            'login' in self.browser.current_url
-        except NotCorrectUrl:
+            WebDriverWait(self.browser, timeout, 1, TimeoutException). \
+                until_not(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
             return False
         return True
 
@@ -48,24 +49,23 @@ class BasePage():
             return True
         return False
 
-    def is_disappeared(self, how, what, timeout=4):
+    def is_url_login_correct(self):
         try:
-            WebDriverWait(self.browser, timeout, 1, TimeoutException). \
-                until_not(EC.presence_of_element_located((how, what)))
-        except TimeoutException:
+            self.browser.switch_to_window(self.browser.window_handles[0])
+            'login' in self.browser.current_url
+        except NotCorrectUrl:
             return False
         return True
 
-    def basket_opened_from_any_page(self):
-        link_to_basket = self.browser.find_element(*BasePageLocators.LINK_BASKET)
-        link_to_basket.click()
+    def should_be_authorized_user(self):
+        assert self.is_element_present(*BasePageLocators.USER_ICON), "User icon is not presented," \
+                                                                     " probably unauthorised user"
+    def should_be_login_link(self):
+        assert self.is_element_present(*BasePageLocators.LOGIN_LINK), "Login link is not presented"
 
     def should_be_to_basket_link(self):
         assert self.is_element_present(
             *BasePageLocators.LINK_BASKET), "Link to basket from Main Page not presented"
-
-    def is_empty_basket(self):
-        assert len(self.browser.find_elements(*BasketPageLocators.MESSAGE_ABOUT_EMPTY)) == 1, 'Basket is not empty'
 
     def solve_quiz_and_get_code(self):
         alert = self.browser.switch_to.alert
